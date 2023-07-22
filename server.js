@@ -22,16 +22,18 @@ const io = require("socket.io")(http, {
 io.on("connection", function (socket) {
   console.log("A user connected: " + socket.id);
 
-  players[socket.id] = {
-    inDeck: [],
-    inHand: [],
-    isPlayerA: false,
-  };
+  io.emit("userConencted", socket.id);
 
-  if (Object.keys(players).length < 2) {
-    players[socket.id].isPlayerA = true;
-    io.emit("firstTurn");
-  }
+  // players[socket.id] = {
+  //   inDeck: [],
+  //   inHand: [],
+  //   isPlayerA: false,
+  // };
+
+  // if (Object.keys(players).length < 2) {
+  //   players[socket.id].isPlayerA = true;
+  //   io.emit("firstTurn");
+  // }
 
   //   socket.on("dealDeck", function (socketId) {
   //     players[socketId].inDeck = shuffle(["boolean", "ping"]);
