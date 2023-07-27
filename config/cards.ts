@@ -1,0 +1,148 @@
+import { ECard, EGroup } from "../Infertaces/ICard";
+
+export const CardsConfig = {
+  [ECard.ROOT]: {
+    url: "",
+    group: EGroup.VEGETETIVE_ORGAN,
+    amount: 8,
+    name: "Raiz",
+  },
+  [ECard.STEM]: {
+    url: "",
+    group: EGroup.VEGETETIVE_ORGAN,
+    amount: 8,
+    name: "Tallo",
+  },
+  [ECard.LEAVE]: {
+    url: "",
+    group: EGroup.VEGETETIVE_ORGAN,
+    amount: 8,
+    name: "Hojas",
+  },
+  [ECard.PHOTOPERIOD]: {
+    url: "",
+    group: EGroup.INDUCTING_CONDITION,
+    amount: 8,
+    name: "Fotoperiodo",
+  },
+  [ECard.COLD]: {
+    url: "",
+    group: EGroup.INDUCTING_CONDITION,
+    amount: 8,
+    name: "Frio",
+  },
+  [ECard.MINERAL_DEFICIENCIES]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Deficiencias minerales",
+  },
+  [ECard.DROGHT]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Sequía",
+  },
+  [ECard.WEED]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Malas hierbas",
+  },
+  [ECard.DEFOLIATORS_BUGS]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Insectos defoliadores",
+  },
+  [ECard.APHIDS_BUGS]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Insectos áfidos",
+  },
+  [ECard.NEMATODE]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Nematodos",
+  },
+  [ECard.FUNGUS]: {
+    url: "",
+    group: EGroup.EXTRES,
+    amount: 2,
+    name: "Hongos",
+  },
+  [ECard.FERTILIZER]: {
+    url: "",
+    group: EGroup.TREATMENT,
+    amount: 5,
+    name: "Fertilizante",
+  },
+  [ECard.WATER]: {
+    url: "",
+    group: EGroup.TREATMENT,
+    amount: 5,
+    name: "Riego",
+  },
+  [ECard.HERBICIDE]: {
+    url: "",
+    group: EGroup.TREATMENT,
+    amount: 5,
+    name: "Herbicida",
+  },
+  [ECard.INSECTICIDE]: {
+    url: "",
+    group: EGroup.TREATMENT,
+    amount: 10,
+    name: "Insecticida",
+  },
+  [ECard.NEMATICIDE]: {
+    url: "",
+    group: EGroup.TREATMENT,
+    amount: 5,
+    name: "Nematicida",
+  },
+  [ECard.FUNGICIDE]: {
+    url: "",
+    group: EGroup.TREATMENT,
+    amount: 5,
+    name: "Fungicida",
+  },
+  [ECard.WILDCARD]: {
+    url: "",
+    group: EGroup.WILDCARD,
+    amount: 6,
+    name: "Comodín",
+  },
+  [ECard.CROP_ROTATION]: {
+    url: "",
+    group: EGroup.SPECIAL,
+    amount: 1,
+    name: "Rotación de cultivos",
+  },
+  [ECard.DISASTER]: {
+    url: "",
+    group: EGroup.SPECIAL,
+    amount: 1,
+    name: "Catástrofe",
+  },
+  [ECard.RELAXED_SEASON]: {
+    url: "",
+    group: EGroup.SPECIAL,
+    amount: 1,
+    name: "Estación tranquila",
+  },
+  [ECard.FLOWER]: {
+    url: "",
+    group: EGroup.FLOWER,
+    amount: 8,
+    name: "Flor",
+  },
+  [ECard.FRUIT]: {
+    url: "",
+    group: EGroup.FRUIT,
+    amount: 7,
+    name: "Fruto",
+  },
+};
