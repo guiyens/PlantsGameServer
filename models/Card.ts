@@ -1,6 +1,6 @@
 import { ECard, EGroup, ICard } from "../Infertaces/ICard";
 
-export class Card implements ICard {
+export class Card implements Partial<ICard> {
   id: string;
   type: ECard;
   image: string;

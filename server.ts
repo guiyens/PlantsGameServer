@@ -32,7 +32,6 @@ io.on("connection", function (socket: Socket) {
     const newPlayer = new Player(socket.id, name);
     newGame.addPlayer(newPlayer);
     io.to(socket.id).emit("addedUser", name);
-
     io.emit("updateGame", newGame);
   });
 
