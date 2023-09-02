@@ -11,4 +11,8 @@ export class Player implements IPlayer {
     this.name = name;
     this.cards = [];
   }
+
+  addCardToPlayer(card: ICard): void {
+    this.cards.push(card);
+  }
 }

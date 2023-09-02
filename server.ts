@@ -1,5 +1,5 @@
 import { Socket } from "socket.io";
-import { IGame } from "./Infertaces/IGame";
+import { IGame, StateEnum } from "./Infertaces/IGame";
 import { Game } from "./models/Game";
 import { Player } from "./models/Player";
 
@@ -19,6 +19,12 @@ io.on("connection", function (socket: Socket) {
   if (newGame.isFullGame()) {
     console.log("Too much people");
     io.to(socket.id).emit("closedGame");
+    socket.disconnect();
+    return;
+  }
+  if (newGame.state !== StateEnum.WAITING) {
+    console.log("Game in course");
+    io.to(socket.id).emit("startedGame");
     socket.disconnect();
     return;
   }

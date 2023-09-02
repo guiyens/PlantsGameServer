@@ -4,6 +4,7 @@ import { Player } from "./Player";
 import { Config } from "../config/gameConfig";
 import { ICardDeck } from "../Infertaces/ICardDeck";
 import { CardDeck } from "./CardDeck";
+import { EGroup, ICard } from "../Infertaces/ICard";
 
 export class Game implements IGame {
   players: IPlayer[];
@@ -53,8 +54,23 @@ export class Game implements IGame {
     }
   }
 
+  dealCards(): void {
+    const cardsToDeal = this.cardDeck.cards.filter(
+      (card: ICard) => card.group !== EGroup.SPECIAL
+    );
+    this.players.forEach((player: Player) => {
+      for (let index = 0; index < Config.carsdForachPlayer; index++) {
+        const randomCard = Math.floor(Math.random() * cardsToDeal.length);
+        player.addCardToPlayer(this.cardDeck.cards[randomCard]);
+        cardsToDeal.splice(randomCard, 1);
+        this.cardDeck.cards.splice(randomCard, 1);
+      }
+    });
+  }
+
   startGame(): void {
     this.state = StateEnum.STARTED;
     this.userActive = this.players[Config.initialPlayer].socketId;
+    this.dealCards();
   }
 }

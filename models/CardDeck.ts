@@ -10,10 +10,15 @@ const cardsConfig: Record<
 
 export class CardDeck implements ICardDeck {
   cards: ICard[];
+  flowers: ICard[];
+  fruits: ICard[];
 
   constructor() {
     this.cards = [];
+    this.flowers = [];
+    this.fruits = [];
     this.createCards();
+    this.prepareCardDesck();
   }
 
   mix(): void {
@@ -43,5 +48,15 @@ export class CardDeck implements ICardDeck {
         );
       }
     }
+  }
+
+  prepareCardDesck() {
+    this.flowers = this.cards.filter(
+      (card: ICard) => card.type === ECard.FLOWER
+    );
+    this.fruits = this.cards.filter((card: ICard) => card.type === ECard.FRUIT);
+    this.cards = this.cards.filter(
+      (card: ICard) => card.type !== ECard.FRUIT && card.type !== ECard.FLOWER
+    );
   }
 }
