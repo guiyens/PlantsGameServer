@@ -8,7 +8,7 @@ const http = require("http").createServer(server);
 const cors = require("cors");
 const { Server } = require("socket.io");
 
-const newGame: IGame = new Game();
+let newGame: IGame = new Game();
 
 const io = new Server(http);
 server.use(cors);
@@ -44,6 +44,10 @@ io.on("connection", function (socket: Socket) {
   socket.on("disconnect", function () {
     console.log("A user disconnected: " + socket.id);
     newGame.removePLayer(socket.id);
+    if (newGame.isOnePlayer()) {
+      io.to(newGame.players[0].socketId).emit("winnerGame");
+      newGame = new Game();
+    }
   });
 
   socket.on("nextTurn", function () {

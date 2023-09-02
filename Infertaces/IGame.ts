@@ -14,6 +14,7 @@ export interface IGame {
   isPlayerAlreadyAdded(name: string): boolean;
   addPlayer(player: Player): void;
   startGame(): void;
+  isOnePlayer(): boolean;
 }
 
 export enum StateEnum {

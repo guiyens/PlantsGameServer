@@ -18,6 +18,16 @@ export class Game implements IGame {
     this.userActive = "";
     this.state = StateEnum.WAITING;
   }
+  endGame(): void {
+    throw new Error("Method not implemented.");
+  }
+  initGame(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  isOnePlayer(): boolean {
+    return this.players.length < 2;
+  }
 
   changeTurn(): void {
     const indexPlayerActive = this.players.findIndex(
