@@ -48,6 +48,9 @@ io.on("connection", function (socket: Socket) {
       io.to(newGame.players[0].socketId).emit("winnerGame");
       newGame = new Game();
     }
+    if (newGame.isEmptyPlayers()) {
+      newGame = new Game();
+    }
   });
 
   socket.on("nextTurn", function () {

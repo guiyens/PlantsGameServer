@@ -26,7 +26,11 @@ export class Game implements IGame {
   }
 
   isOnePlayer(): boolean {
-    return this.players.length < 2;
+    return this.players.length === 1;
+  }
+
+  isEmptyPlayers(): boolean {
+    return this.players.length === 0;
   }
 
   changeTurn(): void {

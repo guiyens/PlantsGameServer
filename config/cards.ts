@@ -20,7 +20,7 @@ export const CardsConfig = {
     name: "Hojas",
   },
   [ECard.PHOTOPERIOD]: {
-    url: ".png",
+    url: "Fotoperiodo/DiaNeutro.png",
     group: EGroup.INDUCTING_CONDITION,
     amount: 8,
     name: "Fotoperiodo",
