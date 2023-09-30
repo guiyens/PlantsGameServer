@@ -71,17 +71,15 @@ export class CardDeck implements ICardDeck {
       ) {
         continue;
       }
-      if (value === "WILDCARD" || value === "STEM") {
-        for (let i = 0; i < cardsConfig[value].amount; i++) {
-          this.cards.push(
-            new Card(
-              `${value}-${i + 1}`,
-              value as ECard,
-              cardsConfig[value].url,
-              cardsConfig[value].group
-            )
-          );
-        }
+      for (let i = 0; i < cardsConfig[value].amount; i++) {
+        this.cards.push(
+          new Card(
+            `${value}-${i + 1}`,
+            value as ECard,
+            cardsConfig[value].url,
+            cardsConfig[value].group
+          )
+        );
       }
     }
   }
