@@ -3,6 +3,8 @@ export interface ICard {
   type: ECard;
   image: string;
   group: EGroup;
+  isSelected?: boolean;
+  isWildCardOrigin?: boolean;
 }
 
 export enum ECard {
@@ -41,3 +43,19 @@ export enum EGroup {
   FLOWER = "FLOWER",
   FRUIT = "FRUIT",
 }
+
+export const tratamentVsExtres: Record<string, string> = {
+  FERTILIZER: "MINERAL_DEFICIENCIES",
+  WATER: "DROGHT",
+  HERBICIDE: "WEED",
+  INSECTICIDE: "APHIDS_BUGS DEFOLIATORS_BUGS",
+  NEMATICIDE: "NEMATODE",
+  FUNGICIDE: "FUNGUS",
+  MINERAL_DEFICIENCIES: "ERTILIZER",
+  DROGHT: "WATER",
+  WEED: "HERBICIDE",
+  APHIDS_BUGS: "INSECTICIDE",
+  DEFOLIATORS_BUGS: "INSECTICIDE",
+  NEMATODE: "NEMATICIDE",
+  FUNGUS: "FUNGICIDE",
+};

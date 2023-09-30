@@ -16,6 +16,15 @@ export interface IGame {
   startGame(): void;
   isOnePlayer(): boolean;
   isEmptyPlayers(): boolean;
+  dissmis(socketId: string, cardsToDismiss: Array<ICard>): void;
+  playCard(socketId: string, card: ICard): void;
+  playSpecial(card: ICard): void;
+  playWildcard(socketId: string, newCard: ICard, wildcard: ICard): void;
+  playExtressCard(
+    socketId: string,
+    card: ICard,
+    playerToAddExtressId: string
+  ): void;
 }
 
 export enum StateEnum {

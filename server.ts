@@ -2,6 +2,9 @@ import { Socket } from "socket.io";
 import { IGame, StateEnum } from "./Infertaces/IGame";
 import { Game } from "./models/Game";
 import { Player } from "./models/Player";
+import { CardDeck } from "./models/CardDeck";
+import { Card } from "./models/Card";
+import { ICard } from "./Infertaces/ICard";
 
 const server = require("express")();
 const http = require("http").createServer(server);
@@ -14,8 +17,6 @@ const io = new Server(http);
 server.use(cors);
 
 io.on("connection", function (socket: Socket) {
-  console.log("A user connected: " + socket.id);
-
   if (newGame.isFullGame()) {
     console.log("Too much people");
     io.to(socket.id).emit("closedGame");
@@ -42,16 +43,67 @@ io.on("connection", function (socket: Socket) {
   });
 
   socket.on("disconnect", function () {
-    console.log("A user disconnected: " + socket.id);
     newGame.removePLayer(socket.id);
     if (newGame.isOnePlayer()) {
-      io.to(newGame.players[0].socketId).emit("winnerGame");
+      io.emit("winnerGame", socket.id);
       newGame = new Game();
     }
     if (newGame.isEmptyPlayers()) {
       newGame = new Game();
     }
   });
+
+  socket.on("dismiss", function (cardsToDismiss: Array<ICard>) {
+    newGame.dissmis(socket.id, cardsToDismiss);
+    newGame.changeTurn();
+    io.emit("updateGame", newGame);
+  });
+
+  socket.on("playCard", function (cardsToPlay: ICard) {
+    newGame.playCard(socket.id, cardsToPlay);
+    const player = newGame.players.find(
+      (player) => player.socketId === socket.id
+    )!;
+    if (player.isPlayerWinner()) {
+      io.emit("winnerGame", socket.id);
+      return;
+    }
+    newGame.changeTurn();
+    io.emit("updateGame", newGame);
+  });
+
+  socket.on(
+    "playWildcard",
+    function (wildcarInfo: { newCard: ICard; wildcard: ICard }) {
+      newGame.playWildcard(
+        socket.id,
+        wildcarInfo.newCard,
+        wildcarInfo.wildcard
+      );
+      newGame.changeTurn();
+      io.emit("updateGame", newGame);
+    }
+  );
+
+  socket.on(
+    "playExtressCard",
+    function (playExtressCardInfo: { card: ICard; playerId: string }) {
+      newGame.playExtressCard(
+        socket.id,
+        playExtressCardInfo.card,
+        playExtressCardInfo.playerId
+      );
+      const player = newGame.players.find(
+        (player) => player.socketId === socket.id
+      )!;
+      if (player.isPlayerWinner()) {
+        io.emit("winnerGame", socket.id);
+        return;
+      }
+      newGame.changeTurn();
+      io.emit("updateGame", newGame);
+    }
+  );
 
   socket.on("nextTurn", function () {
     newGame.changeTurn();

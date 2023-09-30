@@ -5,6 +5,7 @@ import { Config } from "../config/gameConfig";
 import { ICardDeck } from "../Infertaces/ICardDeck";
 import { CardDeck } from "./CardDeck";
 import { EGroup, ICard } from "../Infertaces/ICard";
+import { Card } from "./Card";
 
 export class Game implements IGame {
   players: IPlayer[];
@@ -59,20 +60,79 @@ export class Game implements IGame {
     return this.players.some((player: IPlayer) => player.name === name);
   }
 
-  addPlayer(player: Player): void {
+  addPlayer(player: IPlayer): void {
     this.players.push(player);
-    console.log("A userAdded: " + player.name);
-
     if (this.isFullGame()) {
       this.startGame();
     }
+  }
+
+  dissmis(socketId: string, cardsToDismiss: Array<ICard>): void {
+    const player = this.players.find((player) => player.socketId === socketId)!;
+    player.removeCardsToPlayer(cardsToDismiss);
+    this.cardDeck.disscard(cardsToDismiss);
+    cardsToDismiss.forEach((element) => {
+      const nextCardForUser = this.cardDeck.getNextCard();
+      player.cards.push(nextCardForUser);
+    });
+  }
+
+  playSpecial(card: ICard): void {
+    console.log("Special card Played");
+  }
+  playWildcard(socketId: string, newCard: ICard, wildcard: ICard): void {
+    const player = this.players.find((player) => player.socketId === socketId)!;
+    player.removeCardsToPlayer([wildcard]);
+    player.addCardToPlayer(newCard);
+    this.cardDeck.disscard([wildcard]);
+  }
+
+  playCard(socketId: string, card: ICard): void {
+    const player = this.players.find((player) => player.socketId === socketId)!;
+    player.removeCardsToPlayer([card]);
+    if (card.group === EGroup.EXTRES || card.group === EGroup.WILDCARD) {
+      return;
+    }
+    if (card.group === EGroup.SPECIAL) {
+      this.playSpecial(card);
+    }
+    if (card.group !== EGroup.SPECIAL) {
+      player.addCardToCrop(
+        card,
+        this.cardDeck.disscard.bind(this.cardDeck),
+        this.cardDeck.getFlower.bind(this.cardDeck),
+        this.cardDeck.getFruit.bind(this.cardDeck)
+      );
+    }
+    player.cards.push(this.cardDeck.getNextCard());
+  }
+
+  playExtressCard(
+    socketId: string,
+    card: ICard,
+    playerToAddExtressId: string
+  ): void {
+    if (card.group !== EGroup.EXTRES) {
+      return;
+    }
+    const player = this.players.find((player) => player.socketId === socketId)!;
+    const playerToAddExtres = this.players.find(
+      (player) => player.socketId === playerToAddExtressId
+    )!;
+    player.removeCardsToPlayer([card]);
+    playerToAddExtres.addExtresCardToCrop(
+      card,
+      this.cardDeck.disscard.bind(this.cardDeck)
+    );
+
+    player.cards.push(this.cardDeck.getNextCard());
   }
 
   dealCards(): void {
     const cardsToDeal = this.cardDeck.cards.filter(
       (card: ICard) => card.group !== EGroup.SPECIAL
     );
-    this.players.forEach((player: Player) => {
+    this.players.forEach((player: IPlayer) => {
       for (let index = 0; index < Config.carsdForachPlayer; index++) {
         const randomCard = Math.floor(Math.random() * cardsToDeal.length);
         player.addCardToPlayer(this.cardDeck.cards[randomCard]);
@@ -80,6 +140,7 @@ export class Game implements IGame {
         this.cardDeck.cards.splice(randomCard, 1);
       }
     });
+    // Falta devolver las especiales al mazo
   }
 
   startGame(): void {

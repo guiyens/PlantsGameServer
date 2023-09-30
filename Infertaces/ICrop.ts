@@ -1,12 +1,13 @@
 import { ICard } from "./ICard";
+import IDictionary from "./IDictionary";
 
 export interface ICrop {
-  root: ICard | undefined;
-  leave: ICard | undefined;
-  stem: ICard | undefined;
-  extres: Array<ICard>;
-  treatements: Array<ICard>;
-  inductingConditions: Array<ICard>;
-  flower: Array<ICard>;
-  fruit: Array<ICard>;
+  dictionary: IDictionary<ICard>;
+  addCardToCrop(
+    card: ICard,
+    dismiss: (cardsToDismiss: Array<ICard>) => void,
+    getFlower?: () => ICard,
+    getFruit?: () => ICard
+  ): void;
+  addExtres(card: ICard, dismiss: (cardsToDismiss: Array<ICard>) => void): void;
 }

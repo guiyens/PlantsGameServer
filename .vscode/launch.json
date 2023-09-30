@@ -9,7 +9,9 @@
       "request": "launch",
       "name": "Iniciar el programa",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/dist/server.js"
+      "program": "${workspaceFolder}/server.ts",
+      "preLaunchTask": "npm: build",
+      "outFiles": ["${workspaceFolder}/dist/server.js"]
     }
   ]
 }
