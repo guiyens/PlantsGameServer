@@ -8,9 +8,9 @@ export class Crop implements ICrop {
 
   constructor() {
     this.dictionary = {};
-    this.dictionary["ROOT"] = undefined;
-    this.dictionary["LEAVE"] = undefined;
-    this.dictionary["STEM"] = undefined;
+    this.dictionary["ROOT"] = {} as ICard;
+    this.dictionary["LEAVE"] = {} as ICard;
+    this.dictionary["STEM"] = {} as ICard;
     this.dictionary["EXTRES"] = [];
     this.dictionary["TREATMENT"] = [];
     this.dictionary["INDUCTING_CONDITION"] = [];
@@ -34,7 +34,7 @@ export class Crop implements ICrop {
       return;
     }
     if (card.group === EGroup.VEGETETIVE_ORGAN) {
-      if (!this.dictionary[card.type]) {
+      if (!(this.dictionary[card.type] as ICard).type) {
         this.dictionary[card.type] = card;
         this.addFlower(card, dismiss, getFlower, getFruit);
       }
