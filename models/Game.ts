@@ -4,8 +4,11 @@ import { Player } from "./Player";
 import { Config } from "../config/gameConfig";
 import { ICardDeck } from "../Infertaces/ICardDeck";
 import { CardDeck } from "./CardDeck";
-import { EGroup, ICard } from "../Infertaces/ICard";
+import { ECard, EGroup, ICard } from "../Infertaces/ICard";
 import { Card } from "./Card";
+import { ICrop } from "../Infertaces/ICrop";
+const { Server } = require("socket.io");
+var _ = require("lodash");
 
 export class Game implements IGame {
   players: IPlayer[];
@@ -67,18 +70,65 @@ export class Game implements IGame {
     }
   }
 
-  dissmis(socketId: string, cardsToDismiss: Array<ICard>): void {
+  dissmis(socketId: string, cardsToDismiss: Array<ICard>, io: any): void {
     const player = this.players.find((player) => player.socketId === socketId)!;
     player.removeCardsToPlayer(cardsToDismiss);
     this.cardDeck.disscard(cardsToDismiss);
     cardsToDismiss.forEach((element) => {
-      const nextCardForUser = this.cardDeck.getNextCard();
+      const nextCardForUser = this.cardDeck.getNextCard(
+        this.playSpecial.bind(this),
+        io
+      );
       player.cards.push(nextCardForUser);
     });
   }
 
-  playSpecial(card: ICard): void {
-    console.log("Special card Played");
+  playSpecial(card: ICard, io: any): void {
+    if (card.type === ECard.DISASTER) {
+      this.players.forEach((player) => {
+        this.cardDeck.disscard(
+          player.crop.dictionary["FLOWER"] as Array<ICard>
+        );
+        (player.crop.dictionary["FLOWER"] as Array<ICard>) = [];
+      });
+    }
+    if (card.type === ECard.RELAXED_SEASON) {
+      this.players.forEach((player) => {
+        this.cardDeck.disscard(
+          player.crop.dictionary["EXTRES"] as Array<ICard>
+        );
+        (player.crop.dictionary["EXTRES"] as Array<ICard>) = [];
+        player.crop.addFlower(
+          {} as ICard,
+          this.cardDeck.disscard.bind(this.cardDeck),
+          this.cardDeck.getFlower.bind(this.cardDeck),
+          this.cardDeck.getFruit.bind(this.cardDeck)
+        );
+      });
+    }
+    if (card.type === ECard.CROP_ROTATION) {
+      let firstPlayerCropOd: ICrop;
+      this.players.forEach((player, index) => {
+        const isLastPlayer = index === Config.maxPlayers - 1;
+        const isFirstPlayer = index === 0;
+        if (isFirstPlayer) {
+          firstPlayerCropOd = _.cloneDeep(player.crop);
+        }
+        const cropToSet = isLastPlayer
+          ? firstPlayerCropOd
+          : this.players[index + 1].crop;
+        player.crop.dictionary["ROOT"] = cropToSet.dictionary["ROOT"];
+        player.crop.dictionary["LEAVE"] = cropToSet.dictionary["LEAVE"];
+        player.crop.dictionary["STEM"] = cropToSet.dictionary["STEM"];
+        player.crop.dictionary["EXTRES"] = cropToSet.dictionary["EXTRES"];
+        player.crop.dictionary["TREATMENT"] = cropToSet.dictionary["TREATMENT"];
+        player.crop.dictionary["INDUCTING_CONDITION"] =
+          cropToSet.dictionary["INDUCTING_CONDITION"];
+        player.crop.dictionary["FLOWER"] = cropToSet.dictionary["FLOWER"];
+      });
+    }
+    this.cardDeck.disscard([card]);
+    io.emit("SpecialCardFound", { newGame: this, specialCard: card });
   }
   playWildcard(socketId: string, newCard: ICard, wildcard: ICard): void {
     const player = this.players.find((player) => player.socketId === socketId)!;
@@ -87,30 +137,34 @@ export class Game implements IGame {
     this.cardDeck.disscard([wildcard]);
   }
 
-  playCard(socketId: string, card: ICard): void {
+  playCard(socketId: string, card: ICard, io: any): void {
     const player = this.players.find((player) => player.socketId === socketId)!;
     player.removeCardsToPlayer([card]);
-    if (card.group === EGroup.EXTRES || card.group === EGroup.WILDCARD) {
+    if (
+      card.group === EGroup.EXTRES ||
+      card.group === EGroup.WILDCARD ||
+      card.group === EGroup.SPECIAL
+    ) {
       return;
     }
-    if (card.group === EGroup.SPECIAL) {
-      this.playSpecial(card);
-    }
-    if (card.group !== EGroup.SPECIAL) {
-      player.addCardToCrop(
-        card,
-        this.cardDeck.disscard.bind(this.cardDeck),
-        this.cardDeck.getFlower.bind(this.cardDeck),
-        this.cardDeck.getFruit.bind(this.cardDeck)
-      );
-    }
-    player.cards.push(this.cardDeck.getNextCard());
+
+    player.addCardToCrop(
+      card,
+      this.cardDeck.disscard.bind(this.cardDeck),
+      this.cardDeck.getFlower.bind(this.cardDeck),
+      this.cardDeck.getFruit.bind(this.cardDeck)
+    );
+
+    player.cards.push(
+      this.cardDeck.getNextCard(this.playSpecial.bind(this), io)
+    );
   }
 
   playExtressCard(
     socketId: string,
     card: ICard,
-    playerToAddExtressId: string
+    playerToAddExtressId: string,
+    io: any
   ): void {
     if (card.group !== EGroup.EXTRES) {
       return;
@@ -125,19 +179,30 @@ export class Game implements IGame {
       this.cardDeck.disscard.bind(this.cardDeck)
     );
 
-    player.cards.push(this.cardDeck.getNextCard());
+    player.cards.push(
+      this.cardDeck.getNextCard(this.playSpecial.bind(this), io)
+    );
   }
 
   dealCards(): void {
-    const cardsToDeal = this.cardDeck.cards.filter(
-      (card: ICard) => card.group !== EGroup.SPECIAL
-    );
+    // const cardsToDeal = this.cardDeck.cards.filter(
+    //   (card: ICard) => card.group !== EGroup.SPECIAL
+    // );
     this.players.forEach((player: IPlayer) => {
       for (let index = 0; index < Config.carsdForachPlayer; index++) {
-        const randomCard = Math.floor(Math.random() * cardsToDeal.length);
-        player.addCardToPlayer(this.cardDeck.cards[randomCard]);
-        cardsToDeal.splice(randomCard, 1);
-        this.cardDeck.cards.splice(randomCard, 1);
+        let randomCardIndex = Math.floor(
+          Math.random() * this.cardDeck.cards.length
+        );
+        let randomCard: ICard = this.cardDeck.cards[randomCardIndex];
+        while (randomCard.group === EGroup.SPECIAL) {
+          randomCardIndex = Math.floor(
+            Math.random() * this.cardDeck.cards.length
+          );
+          randomCard = this.cardDeck.cards[randomCardIndex];
+        }
+        player.addCardToPlayer(randomCard);
+        // cardsToDeal.splice(randomCardIndex, 1);
+        this.cardDeck.cards.splice(randomCardIndex, 1);
       }
     });
     // Falta devolver las especiales al mazo

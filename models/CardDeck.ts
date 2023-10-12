@@ -33,16 +33,21 @@ export class CardDeck implements ICardDeck {
     }
   }
 
-  getNextCard(): ICard {
-    let firstCard = 0;
+  getNextCard(playSpecial: (card: ICard, io: any) => void, io: any): ICard {
     let cardToReturn: ICard;
     if (this.cards.length === 0) {
       this.cards = [...this.discarded];
       this.discarded = [];
-      firstCard = 0;
     }
-    cardToReturn = { ...this.cards[firstCard] };
-    this.cards.splice(0, 1);
+    let firstCard = this.cards[0];
+    if (firstCard.group === EGroup.SPECIAL) {
+      playSpecial(firstCard, io);
+      cardToReturn = { ...this.cards[1] };
+      this.cards.splice(0, 2);
+    } else {
+      cardToReturn = { ...firstCard };
+      this.cards.splice(0, 1);
+    }
 
     return cardToReturn;
   }
@@ -62,15 +67,15 @@ export class CardDeck implements ICardDeck {
   }
   createCards(): void {
     for (const value in ECard) {
-      // No meto en el mazo ni los comdines ni las cartas especiales
+      // No meto en el mazo las cartas especiales
       // Cuando quiera jugar con ellas hayq ue borrar este codigo
-      if (
-        value === "DISASTER" ||
-        value === "RELAXED_SEASON" ||
-        value === "CROP_ROTATION"
-      ) {
-        continue;
-      }
+      // if (
+      //   value === "DISASTER" ||
+      //   value === "RELAXED_SEASON" ||
+      //   value === "CROP_ROTATION"
+      // ) {
+      //   continue;
+      // }
       for (let i = 0; i < cardsConfig[value].amount; i++) {
         this.cards.push(
           new Card(

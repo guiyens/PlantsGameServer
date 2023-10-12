@@ -16,14 +16,15 @@ export interface IGame {
   startGame(): void;
   isOnePlayer(): boolean;
   isEmptyPlayers(): boolean;
-  dissmis(socketId: string, cardsToDismiss: Array<ICard>): void;
-  playCard(socketId: string, card: ICard): void;
-  playSpecial(card: ICard): void;
+  dissmis(socketId: string, cardsToDismiss: Array<ICard>, io: any): void;
+  playCard(socketId: string, card: ICard, io: any): void;
+  playSpecial(card: ICard, io: any): void;
   playWildcard(socketId: string, newCard: ICard, wildcard: ICard): void;
   playExtressCard(
     socketId: string,
     card: ICard,
-    playerToAddExtressId: string
+    playerToAddExtressId: string,
+    io: any
   ): void;
 }
 

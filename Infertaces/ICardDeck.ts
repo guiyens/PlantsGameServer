@@ -6,7 +6,7 @@ export interface ICardDeck {
   fruits: Array<ICard>;
   discarded: Array<ICard>;
   mix(): void;
-  getNextCard(): ICard;
+  getNextCard(playSpecial: (card: ICard, io: any) => void, io: any): ICard;
   createCards(): void;
   prepareCardDesck(): void;
   disscard(cardsToDismiss: Array<ICard>): void;

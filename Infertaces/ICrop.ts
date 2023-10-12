@@ -10,4 +10,10 @@ export interface ICrop {
     getFruit?: () => ICard
   ): void;
   addExtres(card: ICard, dismiss: (cardsToDismiss: Array<ICard>) => void): void;
+  addFlower(
+    card: ICard,
+    dismiss: (cardsToDismiss: Array<ICard>) => void,
+    getFlower: () => ICard,
+    getFruit: () => ICard
+  ): void;
 }

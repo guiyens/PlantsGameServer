@@ -167,9 +167,9 @@ export class Crop implements ICrop {
     // si tiene dos o mas INDUCTING_CONDITION
     // y no tiene ningun extress
     if (
-      !!this.dictionary["ROOT"] &&
-      !!this.dictionary["LEAVE"] &&
-      !!this.dictionary["STEM"] &&
+      (this.dictionary["ROOT"] as ICard).type &&
+      (this.dictionary["LEAVE"] as ICard).type &&
+      (this.dictionary["STEM"] as ICard).type &&
       (this.dictionary["EXTRES"] as Array<ICard>).length === 0 &&
       (this.dictionary["INDUCTING_CONDITION"] as Array<ICard>).length >= 2
     ) {
