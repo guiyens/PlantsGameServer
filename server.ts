@@ -56,12 +56,15 @@ io.on("connection", function (socket: Socket) {
   socket.on("disconnect", function () {
     newGame.removePLayer(socket.id);
     if (newGame.isOnePlayer()) {
-      io.emit("winnerGame", socket.id);
+      io.emit("winnerGame", newGame.players[0].socketId);
       newGame = new Game();
+      return;
     }
     if (newGame.isEmptyPlayers()) {
       newGame = new Game();
+      return;
     }
+    io.emit("updateGame", newGame);
   });
 
   socket.on("dismiss", function (cardsToDismiss: Array<ICard>) {
@@ -119,6 +122,10 @@ io.on("connection", function (socket: Socket) {
 
   socket.on("nextTurn", function () {
     newGame.changeTurn();
+    io.emit("updateGame", newGame);
+  });
+  socket.on("startGame", function () {
+    newGame.startGame();
     io.emit("updateGame", newGame);
   });
 });
