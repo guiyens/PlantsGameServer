@@ -50,6 +50,9 @@ export class Game implements IGame {
   }
 
   removePLayer(socketId: string): void {
+    if (socketId === this.userActive) {
+      this.changeTurn();
+    }
     this.players = this.players.filter(
       (player) => player.socketId !== socketId
     );
