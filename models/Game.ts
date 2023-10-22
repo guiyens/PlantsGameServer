@@ -43,7 +43,7 @@ export class Game implements IGame {
     const indexPlayerActive = this.players.findIndex(
       (player) => player.socketId === this.userActive
     );
-    const indexLastPlayer = Config.maxPlayers - 1;
+    const indexLastPlayer = this.players.length - 1;
     if (indexPlayerActive === indexLastPlayer) {
       this.userActive = this.players[0].socketId;
       return;
@@ -114,7 +114,7 @@ export class Game implements IGame {
     if (card.type === ECard.CROP_ROTATION) {
       let firstPlayerCropOd: ICrop;
       this.players.forEach((player, index) => {
-        const isLastPlayer = index === Config.maxPlayers - 1;
+        const isLastPlayer = index === this.players.length - 1;
         const isFirstPlayer = index === 0;
         if (isFirstPlayer) {
           firstPlayerCropOd = _.cloneDeep(player.crop);
