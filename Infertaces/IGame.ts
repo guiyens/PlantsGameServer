@@ -8,6 +8,7 @@ export interface IGame {
   cardDeck: ICardDeck;
   userActive: string;
   state: StateEnum;
+  maxPlayers: number;
   changeTurn(): void;
   removePLayer(socketId: string): void;
   isFullGame(): boolean;

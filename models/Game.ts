@@ -15,12 +15,14 @@ export class Game implements IGame {
   cardDeck: ICardDeck;
   userActive: string;
   state: StateEnum;
+  maxPlayers: number;
 
   constructor() {
     this.players = [];
     this.cardDeck = new CardDeck();
     this.userActive = "";
     this.state = StateEnum.WAITING;
+    this.maxPlayers = Config.maxPlayers;
   }
   endGame(): void {
     throw new Error("Method not implemented.");
