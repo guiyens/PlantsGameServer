@@ -27,6 +27,7 @@ export interface IGame {
     playerToAddExtressId: string,
     io: any
   ): void;
+  addLog(socketId: string, cardPlayed: ICard, playerAffectedId?: string): void;
 }
 
 export enum StateEnum {

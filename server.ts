@@ -2,10 +2,7 @@ import { Socket } from "socket.io";
 import { IGame, StateEnum } from "./Infertaces/IGame";
 import { Game } from "./models/Game";
 import { Player } from "./models/Player";
-import { CardDeck } from "./models/CardDeck";
-import { Card } from "./models/Card";
-import { ECard, EGroup, ICard } from "./Infertaces/ICard";
-import { ICrop } from "./Infertaces/ICrop";
+import { ICard } from "./Infertaces/ICard";
 
 const server = require("express")();
 const http = require("http").createServer(server);
@@ -74,6 +71,7 @@ io.on("connection", function (socket: Socket) {
   });
 
   socket.on("playCard", function (cardToPlay: ICard) {
+    newGame.addLog(socket.id, cardToPlay);
     newGame.playCard(socket.id, cardToPlay, io);
     const player = newGame.players.find(
       (player) => player.socketId === socket.id
@@ -89,6 +87,7 @@ io.on("connection", function (socket: Socket) {
   socket.on(
     "playWildcard",
     function (wildcarInfo: { newCard: ICard; wildcard: ICard }) {
+      newGame.addLog(socket.id, wildcarInfo.wildcard);
       newGame.playWildcard(
         socket.id,
         wildcarInfo.newCard,
@@ -102,6 +101,11 @@ io.on("connection", function (socket: Socket) {
   socket.on(
     "playExtressCard",
     function (playExtressCardInfo: { card: ICard; playerId: string }) {
+      newGame.addLog(
+        socket.id,
+        playExtressCardInfo.card,
+        playExtressCardInfo.playerId
+      );
       newGame.playExtressCard(
         socket.id,
         playExtressCardInfo.card,

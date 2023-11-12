@@ -7,6 +7,8 @@ import { CardDeck } from "./CardDeck";
 import { ECard, EGroup, ICard } from "../Infertaces/ICard";
 import { Card } from "./Card";
 import { ICrop } from "../Infertaces/ICrop";
+import { ILog } from "../Infertaces/ILog";
+import { Log } from "./Log";
 const { Server } = require("socket.io");
 var _ = require("lodash");
 
@@ -16,6 +18,7 @@ export class Game implements IGame {
   userActive: string;
   state: StateEnum;
   maxPlayers: number;
+  activityLog: Array<ILog>;
 
   constructor() {
     this.players = [];
@@ -23,6 +26,7 @@ export class Game implements IGame {
     this.userActive = "";
     this.state = StateEnum.WAITING;
     this.maxPlayers = Config.maxPlayers;
+    this.activityLog = [];
   }
   endGame(): void {
     throw new Error("Method not implemented.");
@@ -217,5 +221,18 @@ export class Game implements IGame {
     this.state = StateEnum.STARTED;
     this.userActive = this.players[Config.initialPlayer].socketId;
     this.dealCards();
+  }
+
+  addLog(socketId: string, cardPlayed: ICard, playerAffectedId?: string) {
+    const player = this.players.find((player) => player.socketId === socketId);
+    const playerAffected = this.players.find(
+      (player) => player.socketId === playerAffectedId
+    );
+    const newLog = new Log(
+      { socketId: player?.socketId, name: player?.name },
+      cardPlayed,
+      { socketId: playerAffected?.socketId, name: playerAffected?.name }
+    );
+    this.activityLog.push(newLog);
   }
 }
