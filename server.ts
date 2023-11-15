@@ -54,7 +54,9 @@ io.on("connection", function (socket: Socket) {
   });
 
   socket.on("disconnect", function () {
-    newGame.addLog(socket.id, "DISCONNECT");
+    if (newGame.state === StateEnum.STARTED) {
+      newGame.addLog(socket.id, "DISCONNECT");
+    }
     newGame.removePLayer(socket.id);
     if (newGame.isOnePlayer()) {
       io.emit("winnerGame", newGame.players[0].socketId);
