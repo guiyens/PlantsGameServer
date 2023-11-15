@@ -42,8 +42,15 @@ export class CardDeck implements ICardDeck {
     let firstCard = this.cards[0];
     if (firstCard.group === EGroup.SPECIAL) {
       playSpecial(firstCard, io);
-      cardToReturn = { ...this.cards[1] };
-      this.cards.splice(0, 2);
+      //devolvemos la siguiente carta del mazo pero si es especial cogemos la siguiente
+      if (this.cards[1].group === EGroup.SPECIAL) {
+        cardToReturn = { ...this.cards[2] };
+        this.cards.push(this.cards[1]);
+        this.cards.splice(0, 2);
+      } else {
+        cardToReturn = { ...this.cards[1] };
+        this.cards.splice(0, 2);
+      }
     } else {
       cardToReturn = { ...firstCard };
       this.cards.splice(0, 1);

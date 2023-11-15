@@ -11,7 +11,10 @@ const { Server } = require("socket.io");
 
 let newGame: IGame = new Game();
 
-const io = new Server(http);
+const io = new Server(http, {
+  pingInterval: 80000,
+  pingTimeout: 70000,
+});
 server.use(cors);
 
 io.on("connection", function (socket: Socket) {
@@ -51,6 +54,7 @@ io.on("connection", function (socket: Socket) {
   });
 
   socket.on("disconnect", function () {
+    newGame.addLog(socket.id, "DISCONNECT");
     newGame.removePLayer(socket.id);
     if (newGame.isOnePlayer()) {
       io.emit("winnerGame", newGame.players[0].socketId);
@@ -66,6 +70,7 @@ io.on("connection", function (socket: Socket) {
 
   socket.on("dismiss", function (cardsToDismiss: Array<ICard>) {
     newGame.dissmis(socket.id, cardsToDismiss, io);
+    newGame.addLog(socket.id, "DISMISS");
     newGame.changeTurn();
     io.emit("updateGame", newGame);
   });
@@ -124,10 +129,10 @@ io.on("connection", function (socket: Socket) {
     }
   );
 
-  socket.on("nextTurn", function () {
-    newGame.changeTurn();
-    io.emit("updateGame", newGame);
-  });
+  // socket.on("nextTurn", function () {
+  //   newGame.changeTurn();
+  //   io.emit("updateGame", newGame);
+  // });
   socket.on("startGame", function () {
     newGame.startGame();
     io.emit("updateGame", newGame);

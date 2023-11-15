@@ -6,18 +6,19 @@ import { Crop } from "./Crop";
 export class Log implements ILog {
   player: Partial<IPlayer>;
   date: Date;
-  action: EGroup;
+  action: EGroup | string;
   playerAffectted: Partial<IPlayer> | undefined;
-  cardPlayed: ICard;
+  cardPlayed: ICard | string;
 
   constructor(
     player: Partial<IPlayer>,
-    cardPlayed: ICard,
+    cardPlayed: ICard | string,
     playerAffected?: Partial<IPlayer>
   ) {
     this.player = player;
     this.date = new Date();
-    this.action = cardPlayed.group;
+    this.action =
+      typeof cardPlayed === "string" ? cardPlayed : cardPlayed.group;
     this.playerAffectted = playerAffected;
     this.cardPlayed = cardPlayed;
   }

@@ -223,7 +223,11 @@ export class Game implements IGame {
     this.dealCards();
   }
 
-  addLog(socketId: string, cardPlayed: ICard, playerAffectedId?: string) {
+  addLog(
+    socketId: string,
+    cardPlayed: ICard | string,
+    playerAffectedId?: string
+  ) {
     const player = this.players.find((player) => player.socketId === socketId);
     const playerAffected = this.players.find(
       (player) => player.socketId === playerAffectedId

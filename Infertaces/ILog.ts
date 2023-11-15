@@ -4,7 +4,7 @@ import { IPlayer } from "./IPlayer";
 export interface ILog {
   player: Partial<IPlayer>;
   date: Date;
-  action: EGroup;
+  action: EGroup | string;
   playerAffectted?: Partial<IPlayer>;
-  cardPlayed: ICard;
+  cardPlayed: ICard | string;
 }
