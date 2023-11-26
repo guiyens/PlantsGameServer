@@ -203,12 +203,6 @@ export class Game implements IGame {
           Math.random() * this.cardDeck.cards.length
         );
         let randomCard: ICard = this.cardDeck.cards[randomCardIndex];
-        while (randomCard.group === EGroup.SPECIAL) {
-          randomCardIndex = Math.floor(
-            Math.random() * this.cardDeck.cards.length
-          );
-          randomCard = this.cardDeck.cards[randomCardIndex];
-        }
         player.addCardToPlayer(randomCard);
         // cardsToDeal.splice(randomCardIndex, 1);
         this.cardDeck.cards.splice(randomCardIndex, 1);
@@ -221,6 +215,7 @@ export class Game implements IGame {
     this.state = StateEnum.STARTED;
     this.userActive = this.players[Config.initialPlayer].socketId;
     this.dealCards();
+    this.cardDeck.addSpecialCards();
   }
 
   addLog(
@@ -238,5 +233,17 @@ export class Game implements IGame {
       { socketId: playerAffected?.socketId, name: playerAffected?.name }
     );
     this.activityLog.push(newLog);
+  }
+
+  validatePlayersCards() {
+    this.players.forEach((player) => {
+      if (player.cards.length > 4) {
+        const extraCards = player.cards.length - 4;
+        for (let index = 0; index < extraCards; index++) {
+          const lastPlayerCard = player.cards.pop() as ICard;
+          this.cardDeck.disscard([lastPlayerCard]);
+        }
+      }
+    });
   }
 }

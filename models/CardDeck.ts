@@ -42,15 +42,8 @@ export class CardDeck implements ICardDeck {
     let firstCard = this.cards[0];
     if (firstCard.group === EGroup.SPECIAL) {
       playSpecial(firstCard, io);
-      //devolvemos la siguiente carta del mazo pero si es especial cogemos la siguiente
-      if (this.cards[1].group === EGroup.SPECIAL) {
-        cardToReturn = { ...this.cards[2] };
-        this.cards.push(this.cards[1]);
-        this.cards.splice(0, 2);
-      } else {
-        cardToReturn = { ...this.cards[1] };
-        this.cards.splice(0, 2);
-      }
+      cardToReturn = { ...this.cards[1] };
+      this.cards.splice(0, 2);
     } else {
       cardToReturn = { ...firstCard };
       this.cards.splice(0, 1);
@@ -74,15 +67,14 @@ export class CardDeck implements ICardDeck {
   }
   createCards(): void {
     for (const value in ECard) {
-      // No meto en el mazo las cartas especiales
-      // Cuando quiera jugar con ellas hayq ue borrar este codigo
-      // if (
-      //   value === "DISASTER" ||
-      //   value === "RELAXED_SEASON" ||
-      //   value === "CROP_ROTATION"
-      // ) {
-      //   continue;
-      // }
+      // No meto en el mazo las cartas especiales ahora para meterlas cuando ya este mezclado
+      if (
+        value === "DISASTER" ||
+        value === "RELAXED_SEASON" ||
+        value === "CROP_ROTATION"
+      ) {
+        continue;
+      }
       for (let i = 0; i < cardsConfig[value].amount; i++) {
         this.cards.push(
           new Card(
@@ -94,6 +86,49 @@ export class CardDeck implements ICardDeck {
         );
       }
     }
+  }
+
+  addSpecialCards() {
+    let specialCardsValues = ["DISASTER", "RELAXED_SEASON", "CROP_ROTATION"];
+    let value = specialCardsValues[Math.floor(Math.random() * 2) + 1];
+    this.cards.splice(
+      20,
+      0,
+      new Card(
+        value,
+        value as ECard,
+        cardsConfig[value].url,
+        cardsConfig[value].group
+      )
+    );
+    specialCardsValues = specialCardsValues.filter(
+      (special) => special !== value
+    );
+    value = specialCardsValues[Math.floor(Math.random() * 1) + 1];
+    this.cards.splice(
+      40,
+      0,
+      new Card(
+        value,
+        value as ECard,
+        cardsConfig[value].url,
+        cardsConfig[value].group
+      )
+    );
+    specialCardsValues = specialCardsValues.filter(
+      (special) => special !== value
+    );
+    value = specialCardsValues[0];
+    this.cards.splice(
+      60,
+      0,
+      new Card(
+        value,
+        value as ECard,
+        cardsConfig[value].url,
+        cardsConfig[value].group
+      )
+    );
   }
 
   prepareCardDesck() {

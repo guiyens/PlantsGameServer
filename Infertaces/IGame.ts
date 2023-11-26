@@ -32,6 +32,7 @@ export interface IGame {
     cardPlayed?: ICard | string,
     playerAffectedId?: string
   ): void;
+  validatePlayersCards(): void;
 }
 
 export enum StateEnum {

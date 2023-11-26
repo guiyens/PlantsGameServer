@@ -74,6 +74,7 @@ io.on("connection", function (socket: Socket) {
     newGame.dissmis(socket.id, cardsToDismiss, io);
     newGame.addLog(socket.id, "DISMISS");
     newGame.changeTurn();
+    newGame.validatePlayersCards();
     io.emit("updateGame", newGame);
   });
 
@@ -88,6 +89,7 @@ io.on("connection", function (socket: Socket) {
       return;
     }
     newGame.changeTurn();
+    newGame.validatePlayersCards();
     io.emit("updateGame", newGame);
   });
 
@@ -101,6 +103,7 @@ io.on("connection", function (socket: Socket) {
         wildcarInfo.wildcard
       );
       newGame.changeTurn();
+      newGame.validatePlayersCards();
       io.emit("updateGame", newGame);
     }
   );
@@ -127,6 +130,7 @@ io.on("connection", function (socket: Socket) {
         return;
       }
       newGame.changeTurn();
+      newGame.validatePlayersCards();
       io.emit("updateGame", newGame);
     }
   );

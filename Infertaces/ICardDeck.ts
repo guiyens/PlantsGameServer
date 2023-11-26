@@ -12,4 +12,5 @@ export interface ICardDeck {
   disscard(cardsToDismiss: Array<ICard>): void;
   getFruit(): ICard;
   getFlower(): ICard;
+  addSpecialCards(): void;
 }
