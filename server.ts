@@ -3,6 +3,7 @@ import { IGame, StateEnum } from "./Infertaces/IGame";
 import { Game } from "./models/Game";
 import { Player } from "./models/Player";
 import { ICard } from "./Infertaces/ICard";
+import { PasswordService } from "./services/PasswordService";
 
 const server = require("express")();
 const http = require("http").createServer(server);
@@ -10,6 +11,7 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 
 let newGame: IGame = new Game();
+let passwordService: PasswordService = new PasswordService();
 
 const io = new Server(http, {
   pingInterval: 80000,
@@ -51,6 +53,11 @@ io.on("connection", function (socket: Socket) {
     //   newGame.cardDeck.cards.unshift(DISASTER_CARD);
     // }
     io.emit("updateGame", newGame);
+  });
+
+  socket.on("ValidateUser", function (password: string) {
+    const result = passwordService.isValidPassword(password);
+    io.to(socket.id).emit("ValidateUser", result);
   });
 
   socket.on("disconnect", function () {
