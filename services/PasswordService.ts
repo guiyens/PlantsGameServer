@@ -56,6 +56,9 @@ export class PasswordService {
   }
 
   isValidFormat(password: string): boolean {
+    //1. Debe contener al menos dos letras "e".
+    //2. Debe contener el número "2".
+    //3. Debe contener al menos tres caracteres especiales, como "!@#$%^&*".
     const passwordRegex = /(?=(.*[e]){2})(?=.*2)(?=.*[!@#$%^&*]{3})/;
     const isValidFormat = passwordRegex.test(password);
     return isValidFormat;

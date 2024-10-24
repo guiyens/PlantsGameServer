@@ -13,15 +13,14 @@ const { Server } = require("socket.io");
 let newGame: IGame = new Game();
 let passwordService: PasswordService = new PasswordService();
 
-const io = new Server(
-  http /*{
+const io = new Server(http, {
   pingInterval: 80000,
   pingTimeout: 70000,
-}*/
-);
+});
 server.use(cors);
 
 io.on("connection", function (socket: Socket) {
+  console.log("connected");
   if (newGame.isFullGame()) {
     console.log("Too much people");
     io.to(socket.id).emit("closedGame");
@@ -63,6 +62,7 @@ io.on("connection", function (socket: Socket) {
   });
 
   socket.on("disconnect", function () {
+    console.log("disconnect");
     if (newGame.state === StateEnum.STARTED) {
       newGame.addLog(socket.id, "DISCONNECT");
     }
