@@ -82,7 +82,7 @@ nsp.on("connection", function (socket: Socket) {
   });
 
   socket.on("dismiss", function (cardsToDismiss: Array<ICard>) {
-    newGame.dissmis(socket.id, cardsToDismiss, io);
+    newGame.dissmis(socket.id, cardsToDismiss, nsp);
     newGame.addLog(socket.id, "DISMISS");
     newGame.changeTurn();
     newGame.validatePlayersCards();
@@ -91,7 +91,7 @@ nsp.on("connection", function (socket: Socket) {
 
   socket.on("playCard", function (cardToPlay: ICard) {
     newGame.addLog(socket.id, cardToPlay);
-    newGame.playCard(socket.id, cardToPlay, io);
+    newGame.playCard(socket.id, cardToPlay, nsp);
     const player = newGame.players.find(
       (player) => player.socketId === socket.id
     )!;
@@ -131,7 +131,7 @@ nsp.on("connection", function (socket: Socket) {
         socket.id,
         playExtressCardInfo.card,
         playExtressCardInfo.playerId,
-        io
+        nsp
       );
       const player = newGame.players.find(
         (player) => player.socketId === socket.id
