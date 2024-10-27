@@ -19,30 +19,32 @@ const io = new Server(http, {
 });
 server.use(cors());
 
-io.on("connection", function (socket: Socket) {
+const nsp = io.of("/test");
+
+nsp.on("connection", function (socket: Socket) {
   console.log("connected");
   if (newGame.isFullGame()) {
     console.log("Too much people");
-    io.to(socket.id).emit("closedGame");
+    nsp.to(socket.id).emit("closedGame");
     socket.disconnect();
     return;
   }
   if (newGame.state !== StateEnum.WAITING) {
     console.log("Game in course");
-    io.to(socket.id).emit("startedGame");
+    nsp.to(socket.id).emit("startedGame");
     socket.disconnect();
     return;
   }
-  io.to(socket.id).emit("socketCreated", socket.id);
+  nsp.to(socket.id).emit("socketCreated", socket.id);
 
   socket.on("addUser", function (name: string) {
     if (newGame.isPlayerAlreadyAdded(name)) {
-      io.emit("AlreadyAddedUser", name);
+      nsp.emit("AlreadyAddedUser", name);
       return;
     }
     const newPlayer = new Player(socket.id, name);
     newGame.addPlayer(newPlayer);
-    io.to(socket.id).emit("addedUser", name);
+    nsp.to(socket.id).emit("addedUser", name);
     // if (newGame.players.length == 2) {
     //   //MOCKING CROPS
     //   newGame.players[0].crop.dictionary = mockCrop1 as any;
@@ -53,12 +55,12 @@ io.on("connection", function (socket: Socket) {
     //   )!;
     //   newGame.cardDeck.cards.unshift(DISASTER_CARD);
     // }
-    io.emit("updateGame", newGame);
+    nsp.emit("updateGame", newGame);
   });
 
   socket.on("ValidateUser", function (password: string) {
     const result = passwordService.isValidPassword(password);
-    io.to(socket.id).emit("ValidateUser", result);
+    nsp.to(socket.id).emit("ValidateUser", result);
   });
 
   socket.on("disconnect", function () {
@@ -68,7 +70,7 @@ io.on("connection", function (socket: Socket) {
     }
     newGame.removePLayer(socket.id);
     if (newGame.isOnePlayer()) {
-      io.emit("winnerGame", newGame.players[0].socketId);
+      nsp.emit("winnerGame", newGame.players[0].socketId);
       newGame = new Game();
       return;
     }
@@ -76,7 +78,7 @@ io.on("connection", function (socket: Socket) {
       newGame = new Game();
       return;
     }
-    io.emit("updateGame", newGame);
+    nsp.emit("updateGame", newGame);
   });
 
   socket.on("dismiss", function (cardsToDismiss: Array<ICard>) {
@@ -84,7 +86,7 @@ io.on("connection", function (socket: Socket) {
     newGame.addLog(socket.id, "DISMISS");
     newGame.changeTurn();
     newGame.validatePlayersCards();
-    io.emit("updateGame", newGame);
+    nsp.emit("updateGame", newGame);
   });
 
   socket.on("playCard", function (cardToPlay: ICard) {
@@ -94,12 +96,12 @@ io.on("connection", function (socket: Socket) {
       (player) => player.socketId === socket.id
     )!;
     if (player.isPlayerWinner()) {
-      io.emit("winnerGame", socket.id);
+      nsp.emit("winnerGame", socket.id);
       return;
     }
     newGame.changeTurn();
     newGame.validatePlayersCards();
-    io.emit("updateGame", newGame);
+    nsp.emit("updateGame", newGame);
   });
 
   socket.on(
@@ -113,7 +115,7 @@ io.on("connection", function (socket: Socket) {
       );
       newGame.changeTurn();
       newGame.validatePlayersCards();
-      io.emit("updateGame", newGame);
+      nsp.emit("updateGame", newGame);
     }
   );
 
@@ -135,22 +137,22 @@ io.on("connection", function (socket: Socket) {
         (player) => player.socketId === socket.id
       )!;
       if (player.isPlayerWinner()) {
-        io.emit("winnerGame", socket.id);
+        nsp.emit("winnerGame", socket.id);
         return;
       }
       newGame.changeTurn();
       newGame.validatePlayersCards();
-      io.emit("updateGame", newGame);
+      nsp.emit("updateGame", newGame);
     }
   );
 
   // socket.on("nextTurn", function () {
   //   newGame.changeTurn();
-  //   io.emit("updateGame", newGame);
+  //   nsp.emit("updateGame", newGame);
   // });
   socket.on("startGame", function () {
     newGame.startGame();
-    io.emit("updateGame", newGame);
+    nsp.emit("updateGame", newGame);
   });
 });
 
@@ -205,7 +207,7 @@ const mockCrop1 = {
     {
       id: "COLD-5",
       type: "COLD",
-      image: "Fotoperiodo/Frio.png",
+      image: "Fotoperiodo/Frnsp.png",
       group: "INDUCTING_CONDITION",
     },
   ],
